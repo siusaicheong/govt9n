@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>政府公文翻譯提示詞全集 (專業版)</title>
+    <style>
+        :root {
+            --primary-bg: #1a202c;
+            --sidebar-bg: #2d3748;
+            --active-item: #4a5568;
+            --accent-color: #3182ce;
+            --text-light: #e2e8f0;
+            --text-dark: #2d3748;
+            --card-bg: #ffffff;
+            --prompt-bg: #f8f9fa;
+            --border-color: #e2e8f0;
+            --user-bubble: #e3f2fd;
+            --ai-bubble: #f0fff4;
+            --viz-bg: #ebf8ff;
+            --viz-border: #bee3f8;
+            --viz-text: #2c5282;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            background-color: #f0f2f5;
+            color: var(--text-dark);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #1a202c;
+            flex-shrink: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background-color: var(--primary-bg);
+            border-bottom: 1px solid #4a5568;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .sidebar-header p {
+            margin: 5px 0 0;
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        .nav-container {
+            padding: 10px 0;
+        }
+
+        .nav-group-title {
+            padding: 15px 20px 5px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #a0aec0;
+            font-weight: bold;
+        }
+
+        .nav-item {
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            line-height: 1.3;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        .nav-item.active {
+            background-color: var(--active-item);
+            border-left-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 30px 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            overflow-y: auto;
+        }
+
+        .header-section {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+        }
+
+        .header-section h1 {
+            margin: 0;
+            font-size: 1.6rem;
+            color: var(--primary-bg);
+        }
+
+        .header-section .subtitle {
+            color: #718096;
+            margin-top: 5px;
+            font-size: 0.95rem;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-header {
+            background-color: #edf2f7;
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #4a5568;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-body {
+            padding: 20px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Collapsible Section */
+        .collapsible-header {
+            background-color: #edf2f7;
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #4a5568;
+            text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .collapsible-header:hover {
+            background-color: #e2e8f0;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .collapsible-content.expanded {
+            max-height: 5000px;
+        }
+
+        /* Visualization Bar */
+        .viz-container {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .viz-step {
+            background-color: var(--viz-bg);
+            border: 1px solid var(--viz-border);
+            color: var(--viz-text);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .viz-arrow {
+            color: #cbd5e0;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Prompt Box */
+        .prompt-text {
+            font-family: Consolas, Monaco, "Courier New", monospace;
+            white-space: pre-wrap;
+            color: #2d3748;
+            background-color: var(--prompt-bg);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .prompt-text ul, .prompt-text ol { margin: 5px 0; padding-left: 20px; }
+        .prompt-text li { margin-bottom: 2px; }
+
+        .copy-btn {
+            background-color: white;
+            border: 1px solid #cbd5e0;
+            color: #4a5568;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background-color: #e2e8f0;
+            color: #2d3748;
+        }
+
+        /* Chat UI Simulation */
+        .chat-ui {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .chat-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .chat-row.user {
+            justify-content: flex-end;
+        }
+
+        .chat-bubble {
+            max-width: 85%;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        .chat-bubble.user {
+            background-color: var(--user-bubble);
+            color: #2c5282;
+            border-bottom-right-radius: 2px;
+            border: 1px solid #bee3f8;
+        }
+
+        .chat-bubble.ai {
+            background-color: var(--ai-bubble);
+            color: #22543d;
+            border-bottom-left-radius: 2px;
+            border: 1px solid #c6f6d5;
+        }
+
+        .chat-label {
+            font-size: 0.65rem;
+            color: #718096;
+            margin-bottom: 4px;
+            font-weight: bold;
+            display: block;
+            text-transform: uppercase;
+        }
+
+        .chat-bubble strong { color: #2f855a; }
+        .chat-bubble.user strong { color: #2b6cb0; }
+        .chat-bubble ul { margin: 5px 0; padding-left: 20px; }
+        .chat-bubble li { margin-bottom: 2px; }
+
+        /* Flow Steps for Strategy 7 */
+        .flow-step {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 20px;
+        }
+        .flow-step::before {
+            content: "";
+            position: absolute;
+            left: 6px;
+            top: 24px;
+            bottom: -20px;
+            width: 2px;
+            background-color: #e2e8f0;
+        }
+        .flow-step:last-child::before { display: none; }
+        
+        .step-badge {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 14px;
+            height: 14px;
+            background-color: var(--accent-color);
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 1px var(--accent-color);
+        }
+        
+        .step-title {
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            .sidebar { width: 100%; height: auto; max-height: 250px; }
+            .main-content { padding: 20px; overflow: visible; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h2>提示詞全集 (專業版)</h2>
+        <p>政府公文翻譯專用</p>
+    </div>
+    <div class="nav-container" id="nav-container">
+    </div>
+</div>
+
+<div class="main-content" id="main-content">
+</div>
+
+<script>
+    const strategies = [
+        {
+            id: "s1",
+            title: "策略 1：工具輔助顯優勢 (Post-Editing)",
+            items: [
+                {
+                    title: "1. 通用潤色與語氣校正",
+                    desc: "適用情境：手上已有翻譯初稿，但覺得語句不夠通順，或語氣不夠像政府公文。",
+                    structure: ["角色：資深審校", "任務：修正語病", "任務：提升流暢度", "任務：語氣檢核"],
+                    promptTemplate: `請擔任特區政府的資深中文審校主任。以下是一段關於 <strong>[填入主題]</strong> 的翻譯初稿。<br>請執行以下任務：<br>1. <strong>修正語病：</strong> 找出並修正任何語法錯誤、錯別字或標點符號誤用。<br>2. <strong>提升流暢度：</strong> 在不改變原意的前提下，潤飾語句，使其更符合中文公文的閱讀習慣（簡潔、莊重）。<br>3. <strong>語氣檢核：</strong> 確保語氣客觀、正式，避免過於口語或情緒化的字眼。<br><br>請列出修改後的版本，並簡要說明你對主要修改處的考量。<br><br><strong>初稿內容：</strong><br>[在此貼上翻譯初稿]`,
+                    realInput: `請擔任特區政府的資深中文審校主任。以下是一段關於 <strong>中小企融資</strong> 的翻譯初稿。<br>請執行以下任務：<br>1. <strong>修正語病：</strong> 找出並修正任何語法錯誤、錯別字或標點符號誤用。<br>2. <strong>提升流暢度：</strong> 在不改變原意的前提下，潤飾語句，使其更符合中文公文的閱讀習慣（簡潔、莊重）。<br>3. <strong>語氣檢核：</strong> 確保語氣客觀、正式，避免過於口語或情緒化的字眼。<br><br>請列出修改後的版本，並簡要說明你對主要修改處的考量。<br><br><strong>初稿內容：</strong><br>中小企融資擔保計劃提供80%的擔保覆蓋. 政府會給錢支持.`,
+                    aiOutput: `<strong>【潤色後版本】</strong><br>「中小企融資擔保計劃」提供八成信貸擔保。政府將提供財政支持。<br><br><strong>主要修改考量：</strong><br>1. <strong>語氣修正：</strong> 將口語的「給錢」改為公文用語「提供財政支持」。<br>2. <strong>習慣用法：</strong> 將「80%」調整為中文公文常見的「八成」。`
+                },
+                {
+                    title: "2. 針對性除錯：事實查核",
+                    desc: "適用情境：翻譯內容包含大量數字、日期，擔心 AI 產生幻覺。",
+                    structure: ["任務：事實查核", "檢查：數據與日期", "檢查：專有名詞", "檢查：邏輯一致性"],
+                    promptTemplate: `請執行嚴格的<strong>『事實查核』(Fact Check)</strong>。請將下方的【原文】與【譯文】進行逐句比對。<br>重點檢查項目：<br>1. <strong>數據與日期：</strong> 確保所有數字、年份、金額與原文完全一致，沒有被篡改或誤植。<br>2. <strong>專有名詞：</strong> 確保機構名稱、法案名稱沒有被隨意捏造（Hallucination）。<br>3. <strong>邏輯一致性：</strong> 確保肯定/否定（如『不應』、『應』）沒有譯反。<br><br>若發現任何不一致，請列出『原文』、『錯誤譯文』以及『修正建議』。若全數正確，請回答『檢查通過』。<br><br><strong>【原文】：</strong><br>[在此貼上原文]<br><strong>【譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請執行嚴格的<strong>『事實查核』(Fact Check)</strong>。請將下方的【原文】與【譯文】進行逐句比對。<br>重點檢查項目：<br>1. <strong>數據與日期：</strong> 確保所有數字、年份、金額與原文完全一致，沒有被篡改或誤植。<br>2. <strong>專有名詞：</strong> 確保機構名稱、法案名稱沒有被隨意捏造（Hallucination）。<br>3. <strong>邏輯一致性：</strong> 確保肯定/否定（如『不應』、『應』）沒有譯反。<br><br>若發現任何不一致，請列出『原文』、『錯誤譯文』以及『修正建議』。若全數正確，請回答『檢查通過』。<br><br><strong>【原文】：</strong><br>The scheme offers 80% coverage.<br><strong>【譯文】：</strong><br>計劃提供90%覆蓋。`,
+                    aiOutput: `<strong>【事實查核報告】</strong><br>發現 1 處嚴重錯誤：<br><br>❌ <strong>錯誤：</strong> 90%<br>✅ <strong>原文：</strong> 80%<br>💡 <strong>修正建議：</strong> 請將「90%」更正為「80%」。`
+                },
+                {
+                    title: "3. 漏譯掃描",
+                    desc: "適用情境：文件很長，擔心翻譯過程中不小心漏掉了一整句或某個子句。",
+                    structure: ["任務：完整性檢查", "對比：原文 vs 譯文", "目標：找出遺漏"],
+                    promptTemplate: `請協助檢查<strong>『完整性』</strong>。請對照原文和譯文，掃描是否有任何句子、子句或列點被遺漏 (Omission)。<br>請注意，不需要檢查翻譯好壞，只需要告訴我：是否有任何原文的訊息點在譯文中消失了？<br><br><strong>【原文】：</strong><br>[在此貼上原文]<br><strong>【譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請協助檢查<strong>『完整性』</strong>。請對照原文和譯文，掃描是否有任何句子、子句或列點被遺漏 (Omission)。<br>請注意，不需要檢查翻譯好壞，只需要告訴我：是否有任何原文的訊息點在譯文中消失了？<br><br><strong>【原文】：</strong><br>Plan A is approved. Plan B is pending.<br><strong>【譯文】：</strong><br>計劃 A 已獲批。`,
+                    aiOutput: `<strong>【完整性檢查報告】</strong><br>發現 1 處漏譯：<br><br>❌ <strong>遺漏內容：</strong> "Plan B is pending."<br>💡 <strong>建議補譯：</strong> 「計劃 B 尚在審批中。」`
+                },
+                {
+                    title: "4. 標點與格式規範化",
+                    desc: "適用情境：初稿混用了全形/半形標點，或者引號用法不統一。",
+                    structure: ["角色：校對員", "任務：全形轉換", "任務：數字處理", "任務：引號統一"],
+                    promptTemplate: `請擔任校對員。以下這段中文譯文將用於正式出版。請專注於標點符號與格式的規範化：<br>1. <strong>全形轉換：</strong> 確保所有中文內容使用全形標點（逗號、句號、括號）。<br>2. <strong>數字處理：</strong> 確保阿拉伯數字與中文字之間留有適當間距（或依照特定樣式指南處理）。<br>3. <strong>引號統一：</strong> 請將所有引號統一為 [指定樣式，例如：『』或""]。<br>4. <strong>書名號：</strong> 確保提及法規或報告名稱時，正確使用書名號《》。<br><br>請提供修正格式後的全文。<br><br><strong>譯文內容：</strong><br>[在此貼上譯文]`,
+                    realInput: `請擔任校對員。以下這段中文譯文將用於正式出版。請專注於標點符號與格式的規範化：<br>1. <strong>全形轉換：</strong> 確保所有中文內容使用全形標點（逗號、句號、括號）。<br>2. <strong>數字處理：</strong> 確保阿拉伯數字與中文字之間留有適當間距（或依照特定樣式指南處理）。<br>3. <strong>引號統一：</strong> 請將所有引號統一為『』。<br>4. <strong>書名號：</strong> 確保提及法規或報告名稱時，正確使用書名號《》。<br><br>請提供修正格式後的全文。<br><br><strong>譯文內容：</strong><br>計劃已獲批.申請人需於2024年提交.`,
+                    aiOutput: `<strong>【最終定稿】</strong><br>計劃已獲批。申請人需於 2024 年提交。<br><br><strong>格式修正：</strong><br>1. <strong>全形標點：</strong> 將半形句點 (.) 改為全形句號 (。)。<br>2. <strong>數字間距：</strong> 在「2024」前後加入空格。`
+                }
+            ]
+        },
+        {
+            id: "s2",
+            title: "策略 2：譯前編輯與提示詞工程",
+            items: [
+                {
+                    title: "1. 原文檢查",
+                    desc: "適用情境：原文隱晦、句式複雜或含文化負載詞。",
+                    structure: ["角色：語言分析專家", "任務：找出潛在問題", "檢查：歧義/文化負載/邏輯"],
+                    promptTemplate: `請擔任語言分析專家。在開始翻譯之前，請先對以下這段原文進行<strong>『原文檢查』</strong>。<br>請找出原文中可能導致翻譯錯誤的 3 類潛在問題，並給予修改或註解建議：<br>1. <strong>歧義句構：</strong> 是否有指代不清（如不明確的 'it', 'they'）或修飾語歸屬不明的長難句？<br>2. <strong>文化負載詞：</strong> 是否有非本地讀者難以理解的香港特有詞彙（如『劏房』、『三無大廈』）？請建議是否需要增譯解釋。<br>3. <strong>邏輯斷裂：</strong> 是否有省略了主語或連接詞導致邏輯不連貫的地方？<br><br>請列出問題點即可，暫時不要翻譯。<br><br><strong>【原文】：</strong><br>[在此貼上原文]`,
+                    realInput: `請擔任語言分析專家。在開始翻譯之前，請先對以下這段原文進行<strong>『原文檢查』</strong>。<br>請找出原文中可能導致翻譯錯誤的 3 類潛在問題，並給予修改或註解建議：<br>1. <strong>歧義句構：</strong> 是否有指代不清（如不明確的 'it', 'they'）或修飾語歸屬不明的長難句？<br>2. <strong>文化負載詞：</strong> 是否有非本地讀者難以理解的香港特有詞彙（如『劏房』、『三無大廈』）？請建議是否需要增譯解釋。<br>3. <strong>邏輯斷裂：</strong> 是否有省略了主語或連接詞導致邏輯不連貫的地方？<br><br>請列出問題點即可，暫時不要翻譯。<br><br><strong>【原文】：</strong><br>The scheme covers subdivided units and three-nil buildings. It will be launched soon.`,
+                    aiOutput: `<strong>【原文檢查報告】</strong><br>1. <strong>文化負載詞：</strong> "subdivided units" (劏房) 與 "three-nil buildings" (三無大廈) 為香港特有詞彙，建議確認是否需加註解釋。<br>2. <strong>歧義句構：</strong> "It" 指代不清，建議明確改為 "The scheme" 以免誤譯為「大廈」。`
+                },
+                {
+                    title: "2. 角色與情境設定",
+                    desc: "適用情境：鎖定政府公文語氣，確立 AI 為輔助角色。",
+                    structure: ["角色：草擬副手", "任務：準備初稿", "要求：語氣/規範/協作"],
+                    promptTemplate: `<strong>【系統設定】</strong><br>你現在是協助資深法定語文主任的<strong>『專業草擬副手』(Professional Drafting Copilot)</strong>。<br><br><strong>【任務背景】</strong><br>我將負責最終的審定工作，而你的任務是根據香港政府公文規範，為我準備一份高品質的翻譯初稿供我修改。<br><br><strong>【翻譯要求】</strong><br>1. <strong>語氣 (Tone)：</strong> 保持客觀、莊重。作為草擬稿，請確保用語精準，避免過度修飾。<br>2. <strong>規範 (Standard)：</strong> 嚴格遵守公務員事務局的用語指引及香港政府公文格式。<br>3. <strong>協作模式：</strong> 若遇到不確定的術語或有多種譯法，請在括號中列出備選方案供我裁決，不要自行猜測。<br><br>請確認你已準備好協助我進行草擬工作。`,
+                    realInput: `<strong>【系統設定】</strong><br>你現在是協助資深法定語文主任的<strong>『專業草擬副手』(Professional Drafting Copilot)</strong>。<br><br><strong>【任務背景】</strong><br>我將負責最終的審定工作，而你的任務是根據香港政府公文規範，為我準備一份高品質的翻譯初稿供我修改。<br><br><strong>【翻譯要求】</strong><br>1. <strong>語氣 (Tone)：</strong> 保持客觀、莊重。作為草擬稿，請確保用語精準，避免過度修飾。<br>2. <strong>規範 (Standard)：</strong> 嚴格遵守公務員事務局的用語指引及香港政府公文格式。<br>3. <strong>協作模式：</strong> 若遇到不確定的術語或有多種譯法，請在括號中列出備選方案供我裁決，不要自行猜測。<br><br>請確認你已準備好協助我進行草擬工作。`,
+                    aiOutput: `收到。我已準備好擔任您的專業草擬副手。我將嚴格遵守公務員事務局指引，保持客觀莊重的語氣。遇到不確定的術語時，我會列出備選方案供您裁決。請提供待譯文本。`
+                },
+                {
+                    title: "3. 進階思維鏈 (CoT)",
+                    desc: "適用情境：針對高難度段落，要求 AI 逐句解釋策略。",
+                    structure: ["任務：逐句推敲", "輸出：原文 -> 分析 -> 策略 -> 草擬", "最後：整合全文"],
+                    promptTemplate: `這段文字較為複雜，請不要直接給出全文翻譯。請執行<strong>『逐句深度推敲』(Sentence-by-Sentence Deep Dive)</strong>。<br><br>對於原文的每一個句子，請按照以下格式輸出分析：<br><br>1. <strong>原文 (Source)：</strong> [複製原文句子]<br>2. <strong>結構與術語分析 (Analysis)：</strong><br>   - 拆解句型結構（如：識別主句與從句）。<br>   - 標註關鍵術語及其港府官方譯名。<br>3. <strong>翻譯策略 (Methodology)：</strong><br>   - 解釋你採用了什麼方法（例如：『意譯以理順邏輯』、『拆分長句以提升可讀性』、『將被動語態轉為主動』）。<br>4. <strong>草擬譯文 (Draft)：</strong> [該句的中文翻譯]<br><br>--- (分隔線) ---<br><br>請逐句完成上述分析後，最後再提供一段整合後的流暢全文。<br><br><strong>【原文】：</strong><br>[在此貼上原文]`,
+                    realInput: `這段文字較為複雜，請不要直接給出全文翻譯。請執行<strong>『逐句深度推敲』(Sentence-by-Sentence Deep Dive)</strong>。<br><br>對於原文的每一個句子，請按照以下格式輸出分析：<br><br>1. <strong>原文 (Source)：</strong> [複製原文句子]<br>2. <strong>結構與術語分析 (Analysis)：</strong><br>   - 拆解句型結構（如：識別主句與從句）。<br>   - 標註關鍵術語及其港府官方譯名。<br>3. <strong>翻譯策略 (Methodology)：</strong><br>   - 解釋你採用了什麼方法（例如：『意譯以理順邏輯』、『拆分長句以提升可讀性』、『將被動語態轉為主動』）。<br>4. <strong>草擬譯文 (Draft)：</strong> [該句的中文翻譯]<br><br>--- (分隔線) ---<br><br>請逐句完成上述分析後，最後再提供一段整合後的流暢全文。<br><br><strong>【原文】：</strong><br>The initiative aims to enhance digital literacy among the elderly.`,
+                    aiOutput: `<strong>1. 原文：</strong> The initiative aims to enhance digital literacy among the elderly.<br><strong>2. 分析：</strong> 主詞 The initiative (該計劃)；動詞 aims to (旨在)；關鍵詞 digital literacy (數字素養)。<br><strong>3. 策略：</strong> 採用直譯，但將 enhance 轉化為「提升」，並調整語序將 among the elderly 移前。<br><strong>4. 草擬：</strong> 該計劃旨在提升長者的數字素養。<br>---<br><strong>整合全文：</strong> 該計劃旨在提升長者的數字素養。`
+                },
+                {
+                    title: "4. 分批輸出與長文處理",
+                    desc: "適用情境：文件過長，需分段處理以保品質。",
+                    structure: ["任務：長篇翻譯", "規則：分段發送", "規則：翻譯完即停", "規則：等待指令"],
+                    promptTemplate: `<strong>【專案啟動】</strong><br>我們將進行長篇文件翻譯。為了確保品質，我會將全文拆分為多個段落發送給你。<br><br><strong>【執行規則】</strong><br>1. 當我發送一段文字時，請<strong>只翻譯該段落</strong>。<br>2. 翻譯完成後，請<strong>立刻停止</strong>，不要自行延伸或總結。<br>3. 等待我發送『下一段』的指令後，再繼續工作。<br><br>如果你理解這個規則，請回答『準備就緒』。`,
+                    realInput: `<strong>【專案啟動】</strong><br>我們將進行長篇文件翻譯。為了確保品質，我會將全文拆分為多個段落發送給你。<br><br><strong>【執行規則】</strong><br>1. 當我發送一段文字時，請<strong>只翻譯該段落</strong>。<br>2. 翻譯完成後，請<strong>立刻停止</strong>，不要自行延伸或總結。<br>3. 等待我發送『下一段』的指令後，再繼續工作。<br><br>如果你理解這個規則，請回答『準備就緒』。`,
+                    aiOutput: `準備就緒。請發送第一段文字，我將只翻譯該段落並等待您的下一步指令。`
+                },
+                {
+                    title: "5. 防失憶與情境重置",
+                    desc: "適用情境：多輪對話後，AI 忘記設定。",
+                    structure: ["提示：情境重置", "重申：語氣", "重申：關鍵術語", "任務：繼續翻譯"],
+                    promptTemplate: `<strong>【系統提示：情境重置】</strong><br>請注意，我們仍在進行 [主題] 的政府公文翻譯任務。<br><br>請重申並保持以下設定：<br>1. <strong>語氣：</strong> 正式官方語氣，保持『草擬副手』的專業度。<br>2. <strong>關鍵術語提醒：</strong><br>   - 'Stakeholders' 譯為『持份者』。<br>   - 'Optimization' 譯為『優化』。<br><br>請帶著這個記憶，繼續翻譯下一段：<br>[在此貼上新段落]`,
+                    realInput: `<strong>【系統提示：情境重置】</strong><br>請注意，我們仍在進行數字經濟政策的政府公文翻譯任務。<br><br>請重申並保持以下設定：<br>1. <strong>語氣：</strong> 正式官方語氣，保持『草擬副手』的專業度。<br>2. <strong>關鍵術語提醒：</strong><br>   - 'Stakeholders' 譯為『持份者』。<br>   - 'Optimization' 譯為『優化』。<br><br>請帶著這個記憶，繼續翻譯下一段：<br>The stakeholders agreed on the optimization plan.`,
+                    aiOutput: `收到。已重置情境記憶。我將繼續保持正式官方語氣。<br><br><strong>譯文：</strong> 持份者就優化方案達成共識。`
+                }
+            ]
+        },
+        {
+            id: "s3",
+            title: "策略 3：譯文優劣認定與對比",
+            items: [
+                {
+                    title: "1. 多版本生成",
+                    desc: "適用情境：不確定風格，一次生成直譯、意譯與公眾導向三種。",
+                    structure: ["任務：多風格翻譯", "版本A：嚴謹直譯", "版本B：流暢意譯", "版本C：公眾導向"],
+                    promptTemplate: `請針對這段原文，提供 3 個不同風格的翻譯版本供我選擇：<br>1. <strong>版本 A（嚴謹直譯）：</strong> 結構緊貼原文，優先確保法律與政策概念的精確對應，適合內部存檔或法律審查。<br>2. <strong>版本 B（流暢意譯）：</strong> 調整語序與句構，使其符合中文公文的閱讀習慣，適合對外發布。<br>3. <strong>版本 C（公眾導向）：</strong> 使用更淺顯易懂的文字，降低閱讀門檻，適合發布在社交媒體或宣傳單張。<br><br>請在每個版本後，簡短說明該版本的處理重點。<br><br><strong>【原文】：</strong><br>[在此貼上原文]`,
+                    realInput: `請針對這段原文，提供 3 個不同風格的翻譯版本供我選擇：<br>1. <strong>版本 A（嚴謹直譯）：</strong> 結構緊貼原文，優先確保法律與政策概念的精確對應，適合內部存檔或法律審查。<br>2. <strong>版本 B（流暢意譯）：</strong> 調整語序與句構，使其符合中文公文的閱讀習慣，適合對外發布。<br>3. <strong>版本 C（公眾導向）：</strong> 使用更淺顯易懂的文字，降低閱讀門檻，適合發布在社交媒體或宣傳單張。<br><br>請在每個版本後，簡短說明該版本的處理重點。<br><br><strong>【原文】：</strong><br>Strict enforcement actions will be taken against offenders.`,
+                    aiOutput: `<strong>版本 A (嚴謹直譯)：</strong> 將對違例者採取嚴格的執法行動。<br><strong>版本 B (流暢意譯)：</strong> 當局將嚴厲執法，打擊違例者。<br><strong>版本 C (公眾導向)：</strong> 我們會嚴打違規行為，絕不手軟。`
+                },
+                {
+                    title: "2. AI 擔任評審 (LLM as Judge)",
+                    desc: "適用情境：比較兩個版本的優劣。",
+                    structure: ["角色：資深主任", "任務：比較評審", "標準：準確/規範/語氣", "輸出：優缺點+結論"],
+                    promptTemplate: `請擔任資深法定語文主任，對以下兩個翻譯版本進行<strong>『比較與評審』</strong>。<br>請根據以下標準進行分析：<br>1. <strong>準確度：</strong> 是否有漏譯或誤解原文政策原意？<br>2. <strong>術語規範：</strong> 是否符合香港政府官方用語習慣？<br>3. <strong>語氣得體：</strong> 哪一個版本的語氣更像正式公文？<br><br><strong>【原文】：</strong> [貼上原文]<br><strong>【譯文 A】：</strong> [貼上版本 A]<br><strong>【譯文 B】：</strong> [貼上版本 B]<br><br><strong>任務：</strong> 請列出兩者的優缺點，並告訴我哪一個版本更好，或者建議如何結合兩者的優點產生一個『最佳版本』。`,
+                    realInput: `請擔任資深法定語文主任，對以下兩個翻譯版本進行<strong>『比較與評審』</strong>。<br>請根據以下標準進行分析：<br>1. <strong>準確度：</strong> 是否有漏譯或誤解原文政策原意？<br>2. <strong>術語規範：</strong> 是否符合香港政府官方用語習慣？<br>3. <strong>語氣得體：</strong> 哪一個版本的語氣更像正式公文？<br><br><strong>【原文】：</strong> The policy is effective.<br><strong>【譯文 A】：</strong> 政策有效。<br><strong>【譯文 B】：</strong> 該政策行之有效。<br><br><strong>任務：</strong> 請列出兩者的優缺點，並告訴我哪一個版本更好，或者建議如何結合兩者的優點產生一個『最佳版本』。`,
+                    aiOutput: `<strong>評審結果：</strong><br><strong>譯文 A：</strong> 準確但過於口語。<br><strong>譯文 B：</strong> 使用了四字成語「行之有效」，語氣更符合公文習慣。<br><strong>結論：</strong> 譯文 B 更好。`
+                },
+                {
+                    title: "3. 自我評分與品質估算",
+                    desc: "適用情境：強制 AI 自省，量化品質。",
+                    structure: ["角色：嚴格審稿人", "任務：自我評分 (1-10)", "分析：扣分點/風險", "輸出：修正版"],
+                    promptTemplate: `翻譯已完成。現在請你跳出翻譯者的角色，轉變為<strong>『嚴格的審稿人』</strong>。<br>請對你剛剛生成的譯文進行自我評分（1-10分，10分為完美），並誠實回答以下問題：<br>1. <strong>扣分點：</strong> 哪裡翻譯得最沒有把握？是否有語意模糊的地方？<br>2. <strong>潛在風險：</strong> 是否有任何術語可能存在爭議？<br>3. <strong>改進建議：</strong> 如果要讓分數提高 1 分，這段譯文應該如何修改？<br><br>請先給出分數與分析，再提供修改後的最終版本。`,
+                    realInput: `翻譯已完成。現在請你跳出翻譯者的角色，轉變為<strong>『嚴格的審稿人』</strong>。<br>請對你剛剛生成的譯文進行自我評分（1-10分，10分為完美），並誠實回答以下問題：<br>1. <strong>扣分點：</strong> 哪裡翻譯得最沒有把握？是否有語意模糊的地方？<br>2. <strong>潛在風險：</strong> 是否有任何術語可能存在爭議？<br>3. <strong>改進建議：</strong> 如果要讓分數提高 1 分，這段譯文應該如何修改？<br><br>請先給出分數與分析，再提供修改後的最終版本。<br><br><strong>【先前譯文】：</strong>該計劃被實施了。`,
+                    aiOutput: `<strong>自我評分：7/10</strong><br><strong>扣分點：</strong> 「被實施了」是被動語態直譯，且「了」字多餘。<br><strong>改進建議：</strong> 改為「該計劃已落實」。<br><strong>修正後版本：</strong> 該計劃已落實。`
+                }
+            ]
+        },
+        {
+            id: "s4",
+            title: "策略 4：術語管理與權威驗證",
+            items: [
+                {
+                    title: "1. 譯前術語提取",
+                    desc: "適用情境：翻譯前先建立術語表。",
+                    structure: ["角色：術語專家", "任務：掃描原文", "提取：專名/縮寫", "輸出：表格"],
+                    promptTemplate: `請擔任術語管理專家。在翻譯之前，請先掃描以下原文，提取出所有需要核對官方譯名的關鍵詞。<br>請將結果整理為一個表格，包含以下欄位：<br>1. <strong>原文術語 (Source Term)：</strong> 包含專有名詞、政府部門、計畫名稱、縮寫（Acronyms）。<br>2. <strong>建議譯名 (Suggested Translation)：</strong> 請根據你的知識庫提供港府慣用譯名。<br>3. <strong>備註 (Notes)：</strong> 若該詞有多種譯法或不確定性，請在此註明。<br><br><strong>【原文】：</strong><br>[在此貼上原文]`,
+                    realInput: `請擔任術語管理專家。在翻譯之前，請先掃描以下原文，提取出所有需要核對官方譯名的關鍵詞。<br>請將結果整理為一個表格，包含以下欄位：<br>1. <strong>原文術語 (Source Term)：</strong> 包含專有名詞、政府部門、計畫名稱、縮寫（Acronyms）。<br>2. <strong>建議譯名 (Suggested Translation)：</strong> 請根據你的知識庫提供港府慣用譯名。<br>3. <strong>備註 (Notes)：</strong> 若該詞有多種譯法或不確定性，請在此註明。<br><br><strong>【原文】：</strong><br>CSTB launched the SME Financing Guarantee Scheme.`,
+                    aiOutput: `| 原文術語 | 建議譯名 | 備註 |<br>|---|---|---|<br>| CSTB | 文化體育及旅遊局 | 簡稱文體旅局 |<br>| SME Financing Guarantee Scheme | 中小企融資擔保計劃 | - |`
+                },
+                {
+                    title: "2. 強制套用術語表",
+                    desc: "適用情境：嚴格遵守指定譯名。",
+                    structure: ["任務：翻譯", "輸入：強制術語表", "規則：精準對應", "規則：縮寫處理"],
+                    promptTemplate: `請翻譯以下段落。在此次任務中，你必須嚴格遵守以下術語表。<br><br><strong>【強制術語表】：</strong><br>o Chief Executive -> 行政長官<br>o Bureau -> 局 (不可譯為『署』或『處』)<br>o Stakeholders -> 持份者 (不可譯為『利益相關者』)<br>o Digital Economy -> 數字經濟 (不可譯為『數位經濟』)<br><br><strong>【執行規則】：</strong><br>1. 凡出現在表中的詞彙，必須精準對應，不得使用同義詞。<br>2. 若原文出現縮寫（如 CCIDA），首次出現時請譯出全稱並括註英文縮寫，其後則使用簡稱。<br>3. 若遇到不在表中的專有名詞，請保留原文並加註括號，待我確認。<br><br><strong>【原文】：</strong><br>[在此貼上原文]`,
+                    realInput: `請翻譯以下段落。在此次任務中，你必須嚴格遵守以下術語表。<br><br><strong>【強制術語表】：</strong><br>o Chief Executive -> 行政長官<br>o Bureau -> 局 (不可譯為『署』或『處』)<br>o Stakeholders -> 持份者 (不可譯為『利益相關者』)<br>o Digital Economy -> 數字經濟 (不可譯為『數位經濟』)<br><br><strong>【執行規則】：</strong><br>1. 凡出現在表中的詞彙，必須精準對應，不得使用同義詞。<br>2. 若原文出現縮寫（如 CCIDA），首次出現時請譯出全稱並括註英文縮寫，其後則使用簡稱。<br>3. 若遇到不在表中的專有名詞，請保留原文並加註括號，待我確認。<br><br><strong>【原文】：</strong><br>The Chief Executive discussed the Digital Economy with stakeholders.`,
+                    aiOutput: `行政長官與持份者討論了數字經濟。`
+                },
+                {
+                    title: "3. 縮寫與機構名稱處理",
+                    desc: "適用情境：規範全稱與簡稱的使用。",
+                    structure: ["任務：縮寫規範", "首次：全稱+括號", "後續：簡稱", "目標：前後一致"],
+                    promptTemplate: `翻譯時請特別注意機構名稱與縮寫的處理規範，請遵循香港政府公文慣例：<br>1. <strong>首次出現 (First Mention)：</strong> 必須翻譯全稱，並在括號內保留英文縮寫。<br>   - 例子： Culture, Sports and Tourism Bureau (CSTB) -> 文化體育及旅遊局（文體旅局）<br>2. <strong>後續出現 (Subsequent Mentions)：</strong> 使用通用的中文簡稱。<br>   - 例子： CSTB -> 文體旅局<br><br>請確保整份文件的縮寫處理前後一致，不要混用全稱與簡稱。<br><br><strong>【原文】：</strong><br>[在此貼上原文]`,
+                    realInput: `翻譯時請特別注意機構名稱與縮寫的處理規範，請遵循香港政府公文慣例：<br>1. <strong>首次出現 (First Mention)：</strong> 必須翻譯全稱，並在括號內保留英文縮寫。<br>   - 例子： Culture, Sports and Tourism Bureau (CSTB) -> 文化體育及旅遊局（文體旅局）<br>2. <strong>後續出現 (Subsequent Mentions)：</strong> 使用通用的中文簡稱。<br>   - 例子： CSTB -> 文體旅局<br><br>請確保整份文件的縮寫處理前後一致，不要混用全稱與簡稱。<br><br><strong>【原文】：</strong><br>CSTB announced the plan. CSTB hopes to attract tourists.`,
+                    aiOutput: `文化體育及旅遊局（文體旅局）宣布該計劃。文體旅局期望吸引遊客。`
+                },
+                {
+                    title: "4. 譯後術語掃描與除錯",
+                    desc: "適用情境：檢查已完成譯文的術語錯誤。",
+                    structure: ["角色：術語校對", "任務：一致性掃描", "檢查：慣例/縮寫/一致性", "輸出：錯誤報告"],
+                    promptTemplate: `請擔任術語校對員。請對照下方的【原文】與【譯文】，進行<strong>『術語一致性掃描』</strong>。<br>請檢查以下項目並列出錯誤報告：<br>1. <strong>未遵守慣例：</strong> 是否有將『數字 (Digital)』誤譯為『數位』、『智能 (Smart)』誤譯為『智慧』的情況？<br>2. <strong>縮寫錯誤：</strong> 機構名稱的簡稱是否準確？<br>3. <strong>不一致：</strong> 同一個英文術語在不同段落是否被翻譯成了不同的中文詞？<br><br>請只列出有問題的項目（格式：原文 -> 錯誤譯文 -> 建議修正），若全數正確請回答『術語檢查通過』。<br><br><strong>【原文】：</strong><br>[在此貼上原文]<br><strong>【譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請擔任術語校對員。請對照下方的【原文】與【譯文】，進行<strong>『術語一致性掃描』</strong>。<br>請檢查以下項目並列出錯誤報告：<br>1. <strong>未遵守慣例：</strong> 是否有將『數字 (Digital)』誤譯為『數位』、『智能 (Smart)』誤譯為『智慧』的情況？<br>2. <strong>縮寫錯誤：</strong> 機構名稱的簡稱是否準確？<br>3. <strong>不一致：</strong> 同一個英文術語在不同段落是否被翻譯成了不同的中文詞？<br><br>請只列出有問題的項目（格式：原文 -> 錯誤譯文 -> 建議修正），若全數正確請回答『術語檢查通過』。<br><br><strong>【原文】：</strong><br>Digital Economy.<br><strong>【譯文】：</strong><br>數位經濟。`,
+                    aiOutput: `<strong>術語檢查報告：</strong><br>❌ Digital Economy -> 數位經濟 (建議修正：數字經濟)`
+                },
+                {
+                    title: "5. 模糊術語決策請求",
+                    desc: "適用情境：遇到不確定術語時主動詢問。",
+                    structure: ["規則：不瞎猜", "動作：暫停詢問", "格式：術語/上下文/選項"],
+                    promptTemplate: `在翻譯過程中，如果遇到任何沒有官方定譯或語意模糊的術語，請不要自行決定。<br>請暫停並向我提出詢問，格式如下：<br>o <strong>術語：</strong> [Term]<br>o <strong>上下文：</strong> [Context]<br>o <strong>選項 A：</strong> [譯法 A]（優點/缺點）<br>o <strong>選項 B：</strong> [譯法 B]（優點/缺點）<br><br>等我確認後，你再繼續翻譯。<br><br><strong>【原文】：</strong><br>[在此貼上原文]`,
+                    realInput: `在翻譯過程中，如果遇到任何沒有官方定譯或語意模糊的術語，請不要自行決定。<br>請暫停並向我提出詢問，格式如下：<br>o <strong>術語：</strong> [Term]<br>o <strong>上下文：</strong> [Context]<br>o <strong>選項 A：</strong> [譯法 A]（優點/缺點）<br>o <strong>選項 B：</strong> [譯法 B]（優點/缺點）<br><br>等我確認後，你再繼續翻譯。<br><br><strong>【原文】：</strong><br>The New-gen Hub will be established.`,
+                    aiOutput: `<strong>詢問：</strong><br><strong>術語：</strong> New-gen Hub<br><strong>選項 A：</strong> 新世代樞紐 (直譯)<br><strong>選項 B：</strong> 新生代中心 (較通順)<br>請指示。`
+                }
+            ]
+        },
+        {
+            id: "s5",
+            title: "策略 5：風格一致性與範例引導",
+            items: [
+                {
+                    title: "1. 風格提取與分析",
+                    desc: "適用情境：分析舊文風格以建立指引。",
+                    structure: ["角色：風格分析師", "輸入：參考範例", "分析：語氣/用詞/句構", "輸出：風格指引"],
+                    promptTemplate: `請擔任<strong>『風格分析師』</strong>。<br>請仔細閱讀以下這篇<strong>【參考範例】</strong>（這是過去發布的政府公文）。請分析並總結其寫作風格，包括：<br>1. <strong>語氣 (Tone)：</strong> 是嚴肅權威、勸導性強，還是親民柔和？<br>2. <strong>用詞 (Vocabulary)：</strong> 偏向學術詞彙還是通俗用語？<br>3. <strong>句構 (Sentence Structure)：</strong> 傾向使用長句還是短句？被動語態的使用頻率如何？<br><br>請歸納出一份簡短的<strong>『風格指引 (Style Guide)』</strong>，待我確認後，我們將用此風格來翻譯新的文件。<br><br><strong>【參考範例】：</strong><br>[在此貼上參考用的舊譯文]`,
+                    realInput: `請擔任<strong>『風格分析師』</strong>。<br>請仔細閱讀以下這篇<strong>【參考範例】</strong>（這是過去發布的政府公文）。請分析並總結其寫作風格，包括：<br>1. <strong>語氣 (Tone)：</strong> 是嚴肅權威、勸導性強，還是親民柔和？<br>2. <strong>用詞 (Vocabulary)：</strong> 偏向學術詞彙還是通俗用語？<br>3. <strong>句構 (Sentence Structure)：</strong> 傾向使用長句還是短句？被動語態的使用頻率如何？<br><br>請歸納出一份簡短的<strong>『風格指引 (Style Guide)』</strong>，待我確認後，我們將用此風格來翻譯新的文件。<br><br><strong>【參考範例】：</strong><br>政府致力推動經濟發展，務必確保各項措施切實落實。相關部門須加強協調，以期達致預期成效。`,
+                    aiOutput: `<strong>風格指引草案：</strong><br>1. <strong>語氣：</strong> 莊重且具勸導性。<br>2. <strong>句構：</strong> 多使用四字成語及流水句。<br>3. <strong>用詞：</strong> 偏向正式行政用語（如「務必」、「切實」）。`
+                },
+                {
+                    title: "2. 範例引導翻譯 (Few-Shot)",
+                    desc: "適用情境：提供對照例子讓 AI 模仿。",
+                    structure: ["輸入：翻譯範例", "學習：處理方式", "任務：翻譯新文本"],
+                    promptTemplate: `請參考以下的<strong>【翻譯範例】，學習其處理長句、術語及語氣的風格，然後將【待譯文本】</strong>翻譯成同樣的風格。<br><br><strong>【翻譯範例 (Example)】：</strong><br>o <strong>原文：</strong> The Chief Executive, Mr John Lee, attended the meeting.<br>o <strong>譯文：</strong> 行政長官李家超出席會議。（注意：省略了『先生』）<br>o <strong>原文：</strong> The scheme aims to enhance digital literacy among students.<br>o <strong>譯文：</strong> 該計劃旨在提升學生的數字素養。（注意：用詞精簡，'aims to' 譯為 '旨在'）<br><br><strong>【待譯文本 (Target Text)】：</strong><br>[在此貼上需要翻譯的新文字]`,
+                    realInput: `請參考以下的<strong>【翻譯範例】，學習其處理長句、術語及語氣的風格，然後將【待譯文本】</strong>翻譯成同樣的風格。<br><br><strong>【翻譯範例 (Example)】：</strong><br>o <strong>原文：</strong> The Chief Executive, Mr John Lee, attended the meeting.<br>o <strong>譯文：</strong> 行政長官李家超出席會議。（注意：省略了『先生』）<br>o <strong>原文：</strong> The scheme aims to enhance digital literacy among students.<br>o <strong>譯文：</strong> 該計劃旨在提升學生的數字素養。（注意：用詞精簡，'aims to' 譯為 '旨在'）<br><br><strong>【待譯文本 (Target Text)】：</strong><br>The Secretary, Mr Chan, visited the school.`,
+                    aiOutput: `局長陳茂波視察學校。`
+                },
+                {
+                    title: "3. 週期性報告參考翻譯",
+                    desc: "適用情境：每月/每季報告，模仿上期格式。",
+                    structure: ["輸入：上月報告(英+中)", "指令：模仿結構", "指令：固定用語", "任務：翻譯本月新內容"],
+                    promptTemplate: `我們需要翻譯本月份的報告。為了確保格式和術語與過往保持高度一致，請參考以下的<strong>【上月報告範例】來翻譯【本月新報告】</strong>。<br><br><strong>【上月報告範例 (Reference Pair)】：</strong><br>o <strong>(上月) 英文原文：</strong><br>[貼上上個月的英文報告片段]<br>o <strong>(上月) 中文譯文：</strong><br>[貼上上個月對應的中文譯文]<br><br><strong>【翻譯指令】：</strong><br>1. <strong>結構模仿：</strong> 請嚴格遵循【上月報告範例】的標題格式、列點方式及排版風格。<br>2. <strong>固定用語：</strong> 報告中的固定標題（如 'Executive Summary', 'Key Performance Indicators'）必須與上月譯文完全一致。<br>3. <strong>新內容處理：</strong> 僅針對【本月新報告】中變動的數據和敘述進行翻譯，但語氣需模仿上月範例。<br><br><strong>【本月新報告 (Target Text)】：</strong><br>[貼上這個月需要翻譯的英文原文]`,
+                    realInput: `我們需要翻譯本月份的報告。為了確保格式和術語與過往保持高度一致，請參考以下的<strong>【上月報告範例】來翻譯【本月新報告】</strong>。<br><br><strong>【上月報告範例 (Reference Pair)】：</strong><br>o <strong>(上月) 英文原文：</strong><br>Executive Summary: Last month saw a 3% increase.<br>o <strong>(上月) 中文譯文：</strong><br><strong>行政摘要：</strong><br>上月錄得百分之三的增長。<br><br><strong>【翻譯指令】：</strong><br>1. <strong>結構模仿：</strong> 請嚴格遵循【上月報告範例】的標題格式、列點方式及排版風格。<br>2. <strong>固定用語：</strong> 報告中的固定標題（如 'Executive Summary', 'Key Performance Indicators'）必須與上月譯文完全一致。<br>3. <strong>新內容處理：</strong> 僅針對【本月新報告】中變動的數據和敘述進行翻譯，但語氣需模仿上月範例。<br><br><strong>【本月新報告 (Target Text)】：</strong><br>Executive Summary: This month saw a 5% increase.`,
+                    aiOutput: `<strong>行政摘要：</strong><br>本月錄得百分之五的增長。`
+                },
+                {
+                    title: "4. 指定風格指南",
+                    desc: "適用情境：明確定義受眾與禁忌。",
+                    structure: ["任務：翻譯", "指南：目標受眾", "指南：語氣要求", "指南：格式/禁忌"],
+                    promptTemplate: `請翻譯以下文本。請嚴格遵守以下的<strong>【風格指南】</strong>：<br>1. <strong>目標受眾：</strong> 一般市民（非專業人士）。<br>2. <strong>語氣要求：</strong> 正面、積極、具鼓勵性，但須保持政府公文的莊重（避免使用網路潮語）。<br>3. <strong>格式規範：</strong> <br>   - 提及政府部門時，請使用全稱。<br>   - 標題請使用『祈使句』風格（例如：『請踴躍參與』而非『參與是受鼓勵的』）。<br>4. <strong>禁忌：</strong> 絕對不要使用『小編』、『親』等非正式用語。<br><br><strong>【待譯文本】：</strong><br>[在此貼上原文]`,
+                    realInput: `請翻譯以下文本。請嚴格遵守以下的<strong>【風格指南】</strong>：<br>1. <strong>目標受眾：</strong> 一般市民（非專業人士）。<br>2. <strong>語氣要求：</strong> 正面、積極、具鼓勵性，但須保持政府公文的莊重（避免使用網路潮語）。<br>3. <strong>格式規範：</strong> <br>   - 提及政府部門時，請使用全稱。<br>   - 標題請使用『祈使句』風格（例如：『請踴躍參與』而非『參與是受鼓勵的』）。<br>4. <strong>禁忌：</strong> 絕對不要使用『小編』、『親』等非正式用語。<br><br><strong>【待譯文本】：</strong><br>Participation is encouraged.`,
+                    aiOutput: `請踴躍參與。`
+                },
+                {
+                    title: "5. 譯後風格一致性檢查",
+                    desc: "適用情境：檢查新譯文是否跑題。",
+                    structure: ["任務：風格檢查", "輸入：標準範例 vs 新初稿", "比對：語氣/用詞/句式", "輸出：建議"],
+                    promptTemplate: `請進行<strong>『風格一致性檢查』</strong>。<br>以下是兩段文字：一段是<strong>【標準風格範例】（過往的正確譯文），另一段是【新翻譯初稿】</strong>。<br>請比對兩者，回答以下問題：<br>1. <strong>語氣落差：</strong> 新譯文是否比範例過於口語化或過於生硬？<br>2. <strong>用詞一致性：</strong> 是否有違反範例中習慣用語的情況（例如範例用『推出』，新譯文卻用『發布』）？<br>3. <strong>句式模仿：</strong> 新譯文是否成功模仿了範例的句型節奏？<br><br>請指出具體的不一致之處並提供修改建議。<br><br><strong>【標準風格範例】：</strong><br>[在此貼上標準範例]<br><strong>【新翻譯初稿】：</strong><br>[在此貼上新初稿]`,
+                    realInput: `請進行<strong>『風格一致性檢查』</strong>。<br>以下是兩段文字：一段是<strong>【標準風格範例】（過往的正確譯文），另一段是【新翻譯初稿】</strong>。<br>請比對兩者，回答以下問題：<br>1. <strong>語氣落差：</strong> 新譯文是否比範例過於口語化或過於生硬？<br>2. <strong>用詞一致性：</strong> 是否有違反範例中習慣用語的情況（例如範例用『推出』，新譯文卻用『發布』）？<br>3. <strong>句式模仿：</strong> 新譯文是否成功模仿了範例的句型節奏？<br><br>請指出具體的不一致之處並提供修改建議。<br><br><strong>【標準風格範例】：</strong><br>計劃已完成。<br><strong>【新翻譯初稿】：</strong><br>計劃搞定了。`,
+                    aiOutput: `<strong>風格檢查報告：</strong><br>1. <strong>語氣落差：</strong> 新譯文「搞定了」過於口語，不符公文規範。<br>2. <strong>建議：</strong> 修改為「計劃已完成」或「計劃已落實」。`
+                }
+            ]
+        },
+        {
+            id: "s6_ec",
+            title: "策略 6：英漢差異 (E→C 英譯中)",
+            items: [
+                {
+                    title: "1. 顯性與隱性邏輯",
+                    desc: "隱形連接詞與流水句。",
+                    structure: ["情境：一般公文", "任務：檢查連接詞", "原則：刪除 and/but/when", "目標：流水句"],
+                    promptTemplate: `<strong>【情境檢查】</strong> 若此文為法律文件，請忽略此指令。若為一般公文，請執行以下優化：<br><br>請檢查譯文中的<strong>連接詞</strong>。英文原文中的 and, but, when, if 在中文裡往往是多餘的。<br>o <strong>範例修正：</strong> <br>   - <em>Weak (直譯):</em> 『當』我們看到數據時，『就』發現了問題。<br>   - <em>Strong (通順):</em> 我們看到數據，隨即發現問題。（刪除『當...就...』）<br>o <strong>指令：</strong> 請掃描全文，刪除約 30% 不必要的連接詞，改用氣韻通暢的流水句表達。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `<strong>【情境檢查】</strong> 若此文為法律文件，請忽略此指令。若為一般公文，請執行以下優化：<br><br>請檢查譯文中的<strong>連接詞</strong>。英文原文中的 and, but, when, if 在中文裡往往是多餘的。<br>o <strong>範例修正：</strong> <br>   - <em>Weak (直譯):</em> 『當』我們看到數據時，『就』發現了問題。<br>   - <em>Strong (通順):</em> 我們看到數據，隨即發現問題。（刪除『當...就...』）<br>o <strong>指令：</strong> 請掃描全文，刪除約 30% 不必要的連接詞，改用氣韻通暢的流水句表達。<br><br><strong>【待潤色譯文】：</strong><br>當會議結束時，我們就離開了。`,
+                    aiOutput: `<strong>潤色後：</strong> 會議結束，我們隨即離開。`
+                },
+                {
+                    title: "2. 主語轉換 (物轉人/主題)",
+                    desc: "避免歐化中文的主語。",
+                    structure: ["任務：檢查主語", "策略：物稱 -> 人稱/主題", "保留：若需強調時間/事件"],
+                    promptTemplate: `請檢查譯文的主語。英文常使用『無生命主語』(Inanimate Subject)。<br><strong>【判斷策略】：</strong><br>o <strong>保留原結構：</strong> 若原文旨在強調『時間』或『事件』的宏大感（如擬人化修辭），可保留物稱主語。<br>o <strong>轉換結構：</strong> 若直譯導致語氣生硬或歐化，請轉換為『人稱主語』或『主題句』。<br><br><strong>【範例參考】：</strong><br>o <strong>原文：</strong> The year 2023 saw a strong recovery in our economy. <br>   - <em>Option A (保留物稱):</em> 二零二三年見證了本港經濟的強勁復甦。<br>   - <em>Option B (轉人稱):</em> 我們在二零二三年錄得本港經濟強勁復甦。<br>o <strong>原文：</strong> The report suggests that... <br>   - <em>Option A (保留物稱):</em> 報告建議...<br>   - <em>Option B (轉人稱):</em> 我們從報告中看到... / 當局在報告中建議...<br><br><strong>指令：</strong> 請根據上下文判斷是否需要轉換主語，以確保中文流暢度與語氣的恰當性。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請檢查譯文的主語。英文常使用『無生命主語』(Inanimate Subject)。<br><strong>【判斷策略】：</strong><br>o <strong>保留原結構：</strong> 若原文旨在強調『時間』或『事件』的宏大感（如擬人化修辭），可保留物稱主語。<br>o <strong>轉換結構：</strong> 若直譯導致語氣生硬或歐化，請轉換為『人稱主語』或『主題句』。<br><br><strong>【範例參考】：</strong><br>o <strong>原文：</strong> The year 2023 saw a strong recovery in our economy. <br>   - <em>Option A (保留物稱):</em> 二零二三年見證了本港經濟的強勁復甦。<br>   - <em>Option B (轉人稱):</em> 我們在二零二三年錄得本港經濟強勁復甦。<br>o <strong>原文：</strong> The report suggests that... <br>   - <em>Option A (保留物稱):</em> 報告建議...<br>   - <em>Option B (轉人稱):</em> 我們從報告中看到... / 當局在報告中建議...<br><br><strong>指令：</strong> 請根據上下文判斷是否需要轉換主語，以確保中文流暢度與語氣的恰當性。<br><br><strong>【待潤色譯文】：</strong><br>The steady increase indicates recovery.`,
+                    aiOutput: `<strong>潤色後：</strong> 從增長可見，經濟正在復甦。`
+                },
+                {
+                    title: "3. 級階轉換 (解壓縮)",
+                    desc: "拆解長修飾語。",
+                    structure: ["任務：處理長修飾語", "問題：堆疊形容詞", "策略：拆解為短句"],
+                    promptTemplate: `請處理譯文中的<strong>長修飾語</strong>。英文常在名詞前堆疊形容詞，直譯會導致中文出現『的、的、的』結構。<br>o <strong>範例修正：</strong> <br>   - <em>Weak (生硬):</em> 這是一個『由政府資助的、旨在幫助中小企業的』計劃。<br>   - <em>Strong (通順):</em> 這項計劃『由政府資助』，『旨在幫助中小企業』。 (將形容詞拆解為動詞短句)<br>o <strong>指令：</strong> 請將長名詞片語『解壓縮』為獨立的短句或子句。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請處理譯文中的<strong>長修飾語</strong>。英文常在名詞前堆疊形容詞，直譯會導致中文出現『的、的、的』結構。<br>o <strong>範例修正：</strong> <br>   - <em>Weak (生硬):</em> 這是一個『由政府資助的、旨在幫助中小企業的』計劃。<br>   - <em>Strong (通順):</em> 這項計劃『由政府資助』，『旨在幫助中小企業』。 (將形容詞拆解為動詞短句)<br>o <strong>指令：</strong> 請將長名詞片語『解壓縮』為獨立的短句或子句。<br><br><strong>【待潤色譯文】：</strong><br>A government-led initiative.`,
+                    aiOutput: `<strong>潤色後：</strong> 這項由政府領導的倡議。`
+                },
+                {
+                    title: "4. 動詞應用 (找回動詞)",
+                    desc: "強化動態感。",
+                    structure: ["任務：強化動態感", "策略：施事名詞 -> 動詞", "策略：介系詞 -> 動詞"],
+                    promptTemplate: `請強化中文的<strong>動態感</strong>。英文常使用名詞或介系詞來表示特徵，中文則傾向用具體動詞。<br>o <strong>範例修正 1 (施事名詞 -> 動詞)：</strong> <br>   - <em>Weak:</em> 政府是這項政策的強烈『支持者』。 (The government is a strong supporter of...)<br>   - <em>Strong:</em> 政府大力『支持』這項政策。<br>   - <em>Weak:</em> 該部門是相關法規的『監管者』。 (The department is the regulator of...)<br>   - <em>Strong:</em> 該部門負責『監管』相關法規。<br>o <strong>範例修正 2 (介系詞 -> 動詞)：</strong> <br>   - <em>Weak:</em> 該草案現正『在』審議『中』。 (The bill is under review.)<br>   - <em>Strong:</em> 該草案現正『接受』審議。<br>   - <em>Weak:</em> 香港正『在』復甦的道路『上』。 (Hong Kong is on the way to recovery.)<br>   - <em>Strong:</em> 香港正『邁向』復甦。<br>o <strong>指令：</strong> 將英文的施事名詞 (-er, -or) 及隱含動作的介系詞轉化為中文的具體動詞。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請強化中文的<strong>動態感</strong>。英文常使用名詞或介系詞來表示特徵，中文則傾向用具體動詞。<br>o <strong>範例修正 1 (施事名詞 -> 動詞)：</strong> <br>   - <em>Weak:</em> 政府是這項政策的強烈『支持者』。 (The government is a strong supporter of...)<br>   - <em>Strong:</em> 政府大力『支持』這項政策。<br>   - <em>Weak:</em> 該部門是相關法規的『監管者』。 (The department is the regulator of...)<br>   - <em>Strong:</em> 該部門負責『監管』相關法規。<br>o <strong>範例修正 2 (介系詞 -> 動詞)：</strong> <br>   - <em>Weak:</em> 該草案現正『在』審議『中』。 (The bill is under review.)<br>   - <em>Strong:</em> 該草案現正『接受』審議。<br>   - <em>Weak:</em> 香港正『在』復甦的道路『上』。 (Hong Kong is on the way to recovery.)<br>   - <em>Strong:</em> 香港正『邁向』復甦。<br>o <strong>指令：</strong> 將英文的施事名詞 (-er, -or) 及隱含動作的介系詞轉化為中文的具體動詞。<br><br><strong>【待潤色譯文】：</strong><br>The department is the regulator of the industry.`,
+                    aiOutput: `<strong>潤色後：</strong> 該部門負責監管業界。`
+                },
+                {
+                    title: "5. 屈折變化 (去標記化)",
+                    desc: "刪除冗餘的「們」、「了」。",
+                    structure: ["任務：去標記化", "策略：複數 -> 疊詞/成語", "策略：刪除 '們'"],
+                    promptTemplate: `請靈活處理英文的屈折變化。不要只會用『們』和『了』，請使用<strong>疊詞、成語或增補修飾語</strong>來表達複數與時態。<br>o <strong>範例修正 1 (複數 -> 疊詞)：</strong> <br>   - <em>Weak:</em> 幾乎所有的家庭都有男子參軍。 (Almost all families...)<br>   - <em>Strong:</em> 幾乎<strong>家家戶戶</strong>都有男子參軍。<br>o <strong>範例修正 2 (複數 -> 成語)：</strong> <br>   - <em>Weak:</em> 文字不能表達我的感激。 (Words cannot express...)<br>   - <em>Strong:</em> <strong>千言萬語</strong>不能表達我的感激。<br>o <strong>範例修正 3 (複數 -> 增補修飾語)：</strong> <br>   - <em>Weak:</em> 戰士們，拿起武器。 (Soldiers, take up...)<br>   - <em>Strong:</em> <strong>各位</strong>戰士，拿起武器。<br>o <strong>指令：</strong> 請使用更豐富的中文詞彙手段（如疊詞、量詞、成語）來翻譯英文的語法標記。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請靈活處理英文的屈折變化。不要只會用『們』和『了』，請使用<strong>疊詞、成語或增補修飾語</strong>來表達複數與時態。<br>o <strong>範例修正 1 (複數 -> 疊詞)：</strong> <br>   - <em>Weak:</em> 幾乎所有的家庭都有男子參軍。 (Almost all families...)<br>   - <em>Strong:</em> 幾乎<strong>家家戶戶</strong>都有男子參軍。<br>o <strong>範例修正 2 (複數 -> 成語)：</strong> <br>   - <em>Weak:</em> 文字不能表達我的感激。 (Words cannot express...)<br>   - <em>Strong:</em> <strong>千言萬語</strong>不能表達我的感激。<br>o <strong>範例修正 3 (複數 -> 增補修飾語)：</strong> <br>   - <em>Weak:</em> 戰士們，拿起武器。 (Soldiers, take up...)<br>   - <em>Strong:</em> <strong>各位</strong>戰士，拿起武器。<br>o <strong>指令：</strong> 請使用更豐富的中文詞彙手段（如疊詞、量詞、成語）來翻譯英文的語法標記。<br><br><strong>【待潤色譯文】：</strong><br>Stakeholders agreed.`,
+                    aiOutput: `<strong>潤色後：</strong> 各持份者均表同意。`
+                },
+                {
+                    title: "6. 搭配詞 (歐化搭配)",
+                    desc: "修正生硬的直譯搭配。",
+                    structure: ["任務：檢查搭配", "目標：符合中文習慣", "修正：直譯結構"],
+                    promptTemplate: `請檢查<strong>動詞與名詞的搭配</strong>是否符合中文習慣。不要只做詞性轉換，要確認詞彙組合的自然度。<br>o <strong>範例修正 1：</strong> <br>   - <em>Weak:</em> <strong>強壯</strong>的競爭 (Strong competition)<br>   - <em>Strong:</em> <strong>激烈</strong>的競爭<br>o <strong>範例修正 2：</strong> <br>   - <em>Weak:</em> <strong>重</strong>交通 (Heavy traffic)<br>   - <em>Strong:</em> 交通<strong>繁忙</strong><br>o <strong>指令：</strong> 修正所有生硬的直譯搭配，確保形容詞與名詞的組合符合中文慣用邏輯。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請檢查<strong>動詞與名詞的搭配</strong>是否符合中文習慣。不要只做詞性轉換，要確認詞彙組合的自然度。<br>o <strong>範例修正 1：</strong> <br>   - <em>Weak:</em> <strong>強壯</strong>的競爭 (Strong competition)<br>   - <em>Strong:</em> <strong>激烈</strong>的競爭<br>o <strong>範例修正 2：</strong> <br>   - <em>Weak:</em> <strong>重</strong>交通 (Heavy traffic)<br>   - <em>Strong:</em> 交通<strong>繁忙</strong><br>o <strong>指令：</strong> 修正所有生硬的直譯搭配，確保形容詞與名詞的組合符合中文慣用邏輯。<br><br><strong>【待潤色譯文】：</strong><br>Make an application.`,
+                    aiOutput: `<strong>潤色後：</strong> 申請。`
+                },
+                {
+                    title: "7. 通用深度潤色 (去歐化)",
+                    desc: "綜合應用所有原則。",
+                    structure: ["角色：資深審校", "安全協議：文體判斷", "指令：流水句/動態化/去代名詞"],
+                    promptTemplate: `請擔任資深中文審校。請對以下翻譯初稿進行潤色。<br><strong>【⚠️ 安全協議：文體判斷】</strong><br>o 若為法律/合約/規條： 請優先保留原文的顯性邏輯（如『及/或』、『該』、『其』），精確度高於流暢度，不執行大幅度的連接詞刪減。<br>o 若為新聞稿/演講/宣傳： 請大膽應用<strong>『英漢對比語言學』</strong>原則，消除翻譯腔。<br><br><strong>【潤色指令 (適用於非法律文本)】：</strong><br>1. <strong>流水句重組：</strong> 將英文的長句拆解，刪除冗餘的連接詞（如：和、而、因為），改用逗號和語序來串聯邏輯。<br>2. <strong>動態化：</strong> 減少使用『是 (be)』、『作出 (make)』、『進行 (conduct)』等萬用動詞，改用更具體的動詞。<br>3. <strong>去代名詞：</strong> 若主語明確，請省略『它』、『他』；若不明確，請重複名詞，避免滿篇代名詞。<br><br><strong>【待潤色初稿】：</strong><br>[在此貼上初稿]`,
+                    realInput: `請擔任資深中文審校。請對以下翻譯初稿進行潤色。<br><strong>【⚠️ 安全協議：文體判斷】</strong><br>o 若為法律/合約/規條： 請優先保留原文的顯性邏輯（如『及/或』、『該』、『其』），精確度高於流暢度，不執行大幅度的連接詞刪減。<br>o 若為新聞稿/演講/宣傳： 請大膽應用<strong>『英漢對比語言學』</strong>原則，消除翻譯腔。<br><br><strong>【潤色指令 (適用於非法律文本)】：</strong><br>1. <strong>流水句重組：</strong> 將英文的長句拆解,刪除冗餘的連接詞（如：和、而、因為），改用逗號和語序來串聯邏輯。<br>2. <strong>動態化：</strong> 減少使用『是 (be)』、『作出 (make)』、『進行 (conduct)』等萬用動詞，改用更具體的動詞。<br>3. <strong>去代名詞：</strong> 若主語明確，請省略『它』、『他』；若不明確，請重複名詞，避免滿篇代名詞。<br><br><strong>【待潤色初稿】：</strong><br>The plan was made by him.`,
+                    aiOutput: `<strong>潤色後：</strong> 計劃由他制定。`
+                }
+            ]
+        },
+        {
+            id: "s6_ce",
+            title: "策略 6：英漢差異 (C→E 中譯英)",
+            items: [
+                {
+                    title: "1. 顯性與隱性邏輯",
+                    desc: "顯性邏輯重建。",
+                    structure: ["任務：檢查句法", "問題：流水句/逗號拼接", "策略：補足連接詞"],
+                    promptTemplate: `請檢查英文譯文的<strong>句法結構</strong>。中文常省略主語或連接詞，直接平鋪直敘。<br>o <strong>範例修正：</strong> <br>   - <em>Weak (Run-on):</em> The policy is effective, it has received widespread support. (Comma Splice)<br>   - <em>Strong (Logical):</em> <strong>Since</strong> the policy is effective, it has received widespread support. (加入連接詞)<br>o <strong>指令：</strong> 請修正所有逗號拼接 (Comma Splices) 的錯誤，補上適當的連接詞或關係代名詞 (which/who)。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請檢查英文譯文的<strong>句法結構</strong>。中文常省略主語或連接詞，直接平鋪直敘。<br>o <strong>範例修正：</strong> <br>   - <em>Weak (Run-on):</em> The policy is effective, it has received widespread support. (Comma Splice)<br>   - <em>Strong (Logical):</em> <strong>Since</strong> the policy is effective, it has received widespread support. (加入連接詞)<br>o <strong>指令：</strong> 請修正所有逗號拼接 (Comma Splices) 的錯誤，補上適當的連接詞或關係代名詞 (which/who)。<br><br><strong>【待潤色譯文】：</strong><br>The meeting ended, we left.`,
+                    aiOutput: `<strong>潤色後：</strong> As the meeting ended, we left.`
+                },
+                {
+                    title: "2. 主語轉換 (人轉物)",
+                    desc: "提升客觀性與專業感。",
+                    structure: ["目標：提升專業感", "策略：物稱主語", "範例：趨勢/數據/時間為主"],
+                    promptTemplate: `為了提升英文的客觀性與專業感，請嘗試使用<strong>物稱主語</strong>，這通常能讓句子更精煉。<br><strong>【範例參考】：</strong><br>o <strong>原文：</strong> 隨著香港與大灣區的聯繫日益緊密，我們看到更多機遇。 <br>   - <em>Weak (Literal):</em> As Hong Kong becomes increasingly connected with the GBA...<br>   - <em>Strong (Revised):</em> <strong>Increasing connectivity</strong> with the GBA brings more opportunities. (強調『聯繫』本身)<br>o <strong>原文：</strong> 去年犯罪率有所下降。 <br>   - <em>Weak (Literal):</em> We recorded a decrease in crime rate last year.<br>   - <em>Strong (Revised):</em> <strong>Last year saw</strong> a decrease in crime rate. (時間為主語)<br><strong>指令：</strong> 請找出文中可以用『趨勢』、『數據』或『時間』作為主詞的句子進行改寫。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `為了提升英文的客觀性與專業感，請嘗試使用<strong>物稱主語</strong>，這通常能讓句子更精煉。<br><strong>【範例參考】：</strong><br>o <strong>原文：</strong> 隨著香港與大灣區的聯繫日益緊密，我們看到更多機遇。 <br>   - <em>Weak (Literal):</em> As Hong Kong becomes increasingly connected with the GBA...<br>   - <em>Strong (Revised):</em> <strong>Increasing connectivity</strong> with the GBA brings more opportunities. (強調『聯繫』本身)<br>o <strong>原文：</strong> 去年犯罪率有所下降。 <br>   - <em>Weak (Literal):</em> We recorded a decrease in crime rate last year.<br>   - <em>Strong (Revised):</em> <strong>Last year saw</strong> a decrease in crime rate. (時間為主語)<br><strong>指令：</strong> 請找出文中可以用『趨勢』、『數據』或『時間』作為主詞的句子進行改寫。<br><br><strong>【待潤色譯文】：</strong><br>We need to improve the system.`,
+                    aiOutput: `<strong>潤色後：</strong> System improvement is needed.`
+                },
+                {
+                    title: "3. 級階轉換 (壓縮)",
+                    desc: "提升資訊密度。",
+                    structure: ["任務：提升密度", "策略：動詞 -> 名詞/形容詞", "策略：子句 -> 片語"],
+                    promptTemplate: `請提升英文的<strong>資訊密度</strong>。請將中文的『動詞子句』或『動詞+副詞』結構，濃縮為英文的『名詞片語』或『介系詞片語』。<br>o <strong>範例修正 1 (動詞+副詞 -> 形容詞+名詞)：</strong> <br>   - <em>Weak:</em> We need to <strong>act immediately</strong>.<br>   - <em>Strong:</em> <strong>Immediate action</strong> is required.<br>o <strong>範例修正 2 (不定詞片語 -> 名詞片語)：</strong> <br>   - <em>Weak:</em> The scheme is <strong>to help the poor</strong>.<br>   - <em>Strong:</em> The scheme is for <strong>poverty alleviation</strong>.<br>o <strong>範例修正 3 (分詞子句 -> 名詞化)：</strong> <br>   - <em>Weak:</em> People <strong>applying for the fund</strong> must be permanent residents.<br>   - <em>Strong:</em> <strong>Applicants</strong> must be permanent residents.<br>o <strong>指令：</strong> 請將鬆散的句子結構『降級』為精煉的片語或單詞。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請提升英文的<strong>資訊密度</strong>。請將中文的『動詞子句』或『動詞+副詞』結構，濃縮為英文的『名詞片語』或『介系詞片語』。<br>o <strong>範例修正 1 (動詞+副詞 -> 形容詞+名詞)：</strong> <br>   - <em>Weak:</em> We need to <strong>act immediately</strong>.<br>   - <em>Strong:</em> <strong>Immediate action</strong> is required.<br>o <strong>範例修正 2 (不定詞片語 -> 名詞片語)：</strong> <br>   - <em>Weak:</em> The scheme is <strong>to help the poor</strong>.<br>   - <em>Strong:</em> The scheme is for <strong>poverty alleviation</strong>.<br>o <strong>範例修正 3 (分詞子句 -> 名詞化)：</strong> <br>   - <em>Weak:</em> People <strong>applying for the fund</strong> must be permanent residents.<br>   - <em>Strong:</em> <strong>Applicants</strong> must be permanent residents.<br>o <strong>指令：</strong> 請將鬆散的句子結構『降級』為精煉的片語或單詞。<br><br><strong>【待潤色譯文】：</strong><br>We must work hard to solve the problem.`,
+                    aiOutput: `<strong>潤色後：</strong> Dedication to problem resolution is essential.`
+                },
+                {
+                    title: "4. 動詞應用 (連動詞/名詞化)",
+                    desc: "處理連動詞與名詞化。",
+                    structure: ["任務：連動詞處理", "技巧：動詞->介系詞", "技巧：動詞->名詞", "技巧：動詞->分詞"],
+                    promptTemplate: `請處理中文的<strong>連動詞</strong>結構，並適度提升英文的資訊密度。<br>請運用以下技巧進行<strong>級階轉換 (Rank Shifting)</strong>，但請注意避免濫用名詞化導致句子臃腫：<br><br><strong>技巧 1：動詞 -> 介系詞 (Verb to Preposition)</strong><br>o <strong>範例1 (省略泛義動詞)：</strong> <br>   - <em>原文：</em> 獲批撥款<strong>進行</strong>緊急維修。<br>   - <em>Weak:</em> Granted funding <strong>to carry out</strong> emergency repairs. (泛義動詞 'carry out' 略顯累贅)<br>   - <em>Strong:</em> Granted funding <strong>for</strong> emergency repairs. (用介系詞 for 直接引導目的，更精簡)<br>o <strong>範例 2 (轉化為行政術語)：</strong> <br>   - <em>原文：</em> 行政長官前往北京<strong>述職</strong>。<br>   - <em>Weak:</em> The Chief Executive traveled to Beijing <strong>to report on his duties</strong>.<br>   - <em>Strong:</em> The Chief Executive traveled to Beijing <strong>for a duty visit</strong>. (將動作轉化為標準行政名詞 'duty visit')<br><br><strong>技巧 2：動詞 -> 名詞 (Verb to Noun / Nominalization) —— ⚠️ 關鍵：追求「高密度」而非「長單字」</strong><br>o <strong>【正確示範】(將鬆散動作轉為政策術語)：</strong> <br>   - <em>原文：</em> 我們必須<strong>快速發展經濟</strong>。<br>   - <em>Weak:</em> We must <strong>develop the economy quickly</strong>. (動詞+副詞)<br>   - <em>Strong:</em> We need <strong>rapid economic development</strong>. (形容詞+名詞，語氣強，資訊密度高)<br>   - <em>原文：</em> 該計劃旨在<strong>協助</strong>中小企。<br>   - <em>Weak:</em> The scheme aims <strong>to help</strong> SMEs.<br>   - <em>Strong:</em> The scheme focuses on <strong>SME support</strong>. (轉為名詞片語)<br>   - <em>原文：</em> 致力於<strong>解決貧窮</strong>問題。<br>   - <em>Weak:</em> Dedicated to <strong>solving poverty</strong>.<br>   - <em>Strong:</em> Dedicated to <strong>poverty alleviation</strong>. (標準政策術語)<br>o <strong>【錯誤示範】(避免殭屍名詞 Zombie Nouns)：</strong> <br>   - <em>Avoid:</em> We should <strong>make an allocation</strong> of resources. (冗長) -> <em>Use:</em> We should <strong>allocate</strong> resources.<br>   - <em>Avoid:</em> For the <strong>facilitation</strong> of exchange. (累贅) -> <em>Use:</em> To <strong>facilitate</strong> exchange.<br><br><strong>技巧 3：動詞 -> 分詞 (Verb to Participle)</strong><br>o <em>原文：</em> 官員視察該區，<strong>參觀</strong>了設施，並與居民<strong>交談</strong>。<br>   - <em>Draft:</em> Officials visited the district, inspected the facilities and talked to residents.<br>   - <em>Polished:</em> <strong>Visiting</strong> the district, officials inspected the facilities <strong>and talked</strong> to residents.<br><br><strong>指令：</strong> 請綜合運用上述技巧，將次要的中文動詞轉化為英文的介系詞、名詞片語（優先考慮政策術語）或分詞。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請處理中文的<strong>連動詞</strong>結構，並適度提升英文的資訊密度。<br>請運用以下技巧進行<strong>級階轉換 (Rank Shifting)</strong>，但請注意避免濫用名詞化導致句子臃腫：<br><br><strong>技巧 1：動詞 -> 介系詞 (Verb to Preposition)</strong><br>o <strong>範例1 (省略泛義動詞)：</strong> <br>   - <em>原文：</em> 獲批撥款<strong>進行</strong>緊急維修。<br>   - <em>Weak:</em> Granted funding <strong>to carry out</strong> emergency repairs. (泛義動詞 'carry out' 略顯累贅)<br>   - <em>Strong:</em> Granted funding <strong>for</strong> emergency repairs. (用介系詞 for 直接引導目的，更精簡)<br>o <strong>範例 2 (轉化為行政術語)：</strong> <br>   - <em>原文：</em> 行政長官前往北京<strong>述職</strong>。<br>   - <em>Weak:</em> The Chief Executive traveled to Beijing <strong>to report on his duties</strong>.<br>   - <em>Strong:</em> The Chief Executive traveled to Beijing <strong>for a duty visit</strong>. (將動作轉化為標準行政名詞 'duty visit')<br><br><strong>技巧 2：動詞 -> 名詞 (Verb to Noun / Nominalization) —— ⚠️ 關鍵：追求「高密度」而非「長單字」</strong><br>o <strong>【正確示範】(將鬆散動作轉為政策術語)：</strong> <br>   - <em>原文：</em> 我們必須<strong>快速發展經濟</strong>。<br>   - <em>Weak:</em> We must <strong>develop the economy quickly</strong>. (動詞+副詞)<br>   - <em>Strong:</em> We need <strong>rapid economic development</strong>. (形容詞+名詞，語氣強，資訊密度高)<br>   - <em>原文：</em> 該計劃旨在<strong>協助</strong>中小企。<br>   - <em>Weak:</em> The scheme aims <strong>to help</strong> SMEs.<br>   - <em>Strong:</em> The scheme focuses on <strong>SME support</strong>. (轉為名詞片語)<br>   - <em>原文：</em> 致力於<strong>解決貧窮</strong>問題。<br>   - <em>Weak:</em> Dedicated to <strong>solving poverty</strong>.<br>   - <em>Strong:</em> Dedicated to <strong>poverty alleviation</strong>. (標準政策術語)<br>o <strong>【錯誤示範】(避免殭屍名詞 Zombie Nouns)：</strong> <br>   - <em>Avoid:</em> We should <strong>make an allocation</strong> of resources. (冗長) -> <em>Use:</em> We should <strong>allocate</strong> resources.<br>   - <em>Avoid:</em> For the <strong>facilitation</strong> of exchange. (累贅) -> <em>Use:</em> To <strong>facilitate</strong> exchange.<br><br><strong>技巧 3：動詞 -> 分詞 (Verb to Participle)</strong><br>o <em>原文：</em> 官員視察該區，<strong>參觀</strong>了設施，並與居民<strong>交談</strong>。<br>   - <em>Draft:</em> Officials visited the district, inspected the facilities and talked to residents.<br>   - <em>Polished:</em> <strong>Visiting</strong> the district, officials inspected the facilities <strong>and talked</strong> to residents.<br><br><strong>指令：</strong> 請綜合運用上述技巧，將次要的中文動詞轉化為英文的介系詞、名詞片語（優先考慮政策術語）或分詞。<br><br><strong>【待潤色譯文】：</strong><br>We must develop the economy quickly.`,
+                    aiOutput: `<strong>潤色後：</strong> We need rapid economic development.`
+                },
+                {
+                    title: "5. 屈折變化 (詞彙轉語法)",
+                    desc: "將中文詞彙標記轉為英文語法。",
+                    structure: ["任務：詞彙轉語法", "策略：完成式取代'曾經'", "策略：未來完成式", "策略：複數隱含'各'"],
+                    promptTemplate: `請將中文的<strong>詞彙標記</strong>轉化為英文的<strong>語法變化</strong>。<br>o <strong>範例修正 1 (完成式取代『過去/曾經』)：</strong> <br>   - <em>Weak:</em> Hong Kong <strong>experienced</strong> financial crises <strong>in the past</strong>.<br>   - <em>Strong:</em> Hong Kong <strong>has experienced</strong> financial crises.<br>o <strong>範例修正 2 (未來完成式取代『屆時將會』)：</strong> <br>   - <em>Weak:</em> By 2025, we <strong>will finish</strong> the construction.<br>   - <em>Strong:</em> By 2025, we <strong>will have completed</strong> the construction.<br>o <strong>範例修正 3 (現在完成進行式取代『已經做了多久』)：</strong> <br>   - <em>Weak:</em> We <strong>are discussing</strong> this proposal <strong>for six months</strong>.<br>   - <em>Strong:</em> We <strong>have been discussing</strong> this proposal for six months.<br>o <strong>範例修正 4 (複數隱含『各/不同』)：</strong> <br>   - <em>Weak:</em> <strong>Different</strong> bureaux are responsible for implementation.<br>   - <em>Strong:</em> <strong>Bureaux</strong> are responsible for implementation.<br>o <strong>指令：</strong> 確保時態與單複數準確，並省略英文中不需要的時間副詞或數量形容詞。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請將中文的<strong>詞彙標記</strong>轉化為英文的<strong>語法變化</strong>。<br>o <strong>範例修正 1 (完成式取代『過去/曾經』)：</strong> <br>   - <em>Weak:</em> Hong Kong <strong>experienced</strong> financial crises <strong>in the past</strong>.<br>   - <em>Strong:</em> Hong Kong <strong>has experienced</strong> financial crises.<br>o <strong>範例修正 2 (未來完成式取代『屆時將會』)：</strong> <br>   - <em>Weak:</em> By 2025, we <strong>will finish</strong> the construction.<br>   - <em>Strong:</em> By 2025, we <strong>will have completed</strong> the construction.<br>o <strong>範例修正 3 (現在完成進行式取代『已經做了多久』)：</strong> <br>   - <em>Weak:</em> We <strong>are discussing</strong> this proposal <strong>for six months</strong>.<br>   - <em>Strong:</em> We <strong>have been discussing</strong> this proposal for six months.<br>o <strong>範例修正 4 (複數隱含『各/不同』)：</strong> <br>   - <em>Weak:</em> <strong>Different</strong> bureaux are responsible for implementation.<br>   - <em>Strong:</em> <strong>Bureaux</strong> are responsible for implementation.<br>o <strong>指令：</strong> 確保時態與單複數準確，並省略英文中不需要的時間副詞或數量形容詞。<br><br><strong>【待潤色譯文】：</strong><br>We discussed this for a long time.`,
+                    aiOutput: `<strong>潤色後：</strong> We have been discussing this for a considerable period.`
+                },
+                {
+                    title: "6. 搭配詞 (中式搭配)",
+                    desc: "修正中式英文搭配。",
+                    structure: ["任務：檢查搭配", "目標：符合母語習慣", "修正：中式英語"],
+                    promptTemplate: `請專門檢查英文的<strong>詞彙搭配 (Collocations)</strong>。<br>o <strong>範例修正：</strong> <br>   - <em>Weak:</em> learn knowledge -> <em>Strong:</em> <strong>acquire</strong> knowledge.<br>   - <em>Weak:</em> open the light -> <em>Strong:</em> <strong>turn on</strong> the light.<br>   - <em>Weak:</em> big rain -> <em>Strong:</em> <strong>heavy</strong> rain.<br>o <strong>指令：</strong> 確保所有形容詞+名詞、動詞+名詞的組合符合英語母語人士的習慣。<br><br><strong>【待潤色譯文】：</strong><br>[在此貼上譯文]`,
+                    realInput: `請專門檢查英文的<strong>詞彙搭配 (Collocations)</strong>。<br>o <strong>範例修正：</strong> <br>   - <em>Weak:</em> learn knowledge -> <em>Strong:</em> <strong>acquire</strong> knowledge.<br>   - <em>Weak:</em> open the light -> <em>Strong:</em> <strong>turn on</strong> the light.<br>   - <em>Weak:</em> big rain -> <em>Strong:</em> <strong>heavy</strong> rain.<br>o <strong>指令：</strong> 確保所有形容詞+名詞、動詞+名詞的組合符合英語母語人士的習慣。<br><br><strong>【待潤色譯文】：</strong><br>We must eat medicine.`,
+                    aiOutput: `<strong>潤色後：</strong> We must take medicine.`
+                },
+                {
+                    title: "7. 通用深度潤色 (語法精煉)",
+                    desc: "綜合應用所有原則。",
+                    structure: ["角色：資深審校", "安全協議：文體判斷", "指令：邏輯/密度/語法"],
+                    promptTemplate: `請擔任資深英文審校。請對以下翻譯初稿進行潤色。<br><strong>【⚠️ 安全協議：文體判斷】</strong><br>o 若為法律/合約/規條： 請優先保留精確的法律用詞，不必過度追求簡潔。<br>o 若為新聞稿/演講/宣傳： 請大膽應用<strong>『英漢對比語言學』</strong>原則，消除中式英語。<br><br><strong>【潤色指令 (適用於非法律文本)】：</strong><br>1. <strong>邏輯顯性化：</strong> 補上缺失的連接詞（because, since, although），修正逗號拼接 (Comma Splice)。<br>2. <strong>資訊密度：</strong> 將動詞子句降級為名詞片語，將副詞轉化為形容詞+名詞。<br>3. <strong>語法精煉：</strong> 運用時態與單複數變化取代冗餘的副詞（如 in the past, different）。<br>4. <strong>搭配檢查：</strong> 修正所有中式英語的詞彙搭配。<br><br><strong>【待潤色初稿】：</strong><br>[在此貼上初稿]`,
+                    realInput: `請擔任資深英文審校。請對以下翻譯初稿進行潤色。<br><strong>【⚠️ 安全協議：文體判斷】</strong><br>o 若為法律/合約/規條： 請優先保留精確的法律用詞，不必過度追求簡潔。<br>o 若為新聞稿/演講/宣傳： 請大膽應用<strong>『英漢對比語言學』</strong>原則，消除中式英語。<br><br><strong>【潤色指令 (適用於非法律文本)】：</strong><br>1. <strong>邏輯顯性化：</strong> 補上缺失的連接詞（because, since, although），修正逗號拼接 (Comma Splice)。<br>2. <strong>資訊密度：</strong> 將動詞子句降級為名詞片語，將副詞轉化為形容詞+名詞。<br>3. <strong>語法精煉：</strong> 運用時態與單複數變化取代冗餘的副詞（如 in the past, different）。<br>4. <strong>搭配檢查：</strong> 修正所有中式英語的詞彙搭配。<br><br><strong>【待潤色初稿】：</strong><br>The economy is good, we are happy.`,
+                    aiOutput: `<strong>潤色後：</strong> Since the economy is robust, we are encouraged.`
+                }
+            ]
+        },
+        {
+            id: "s7",
+            title: "策略 7：多步驟工作流程設計",
+            items: [
+                {
+                    title: "完整翻譯工作流程（英譯中示範）",
+                    desc: "系統性翻譯流程範例。",
+                    structure: ["Step 1: 原文檢查", "Step 2: 術語提取", "Step 3: 翻譯", "Step 4: 事實查核", "Step 5: 去歐化", "Step 6: 定稿"],
+                    promptTemplate: `我們將執行一個系統性的翻譯工作流程。請嚴格按照以下步驟執行，每完成一步後暫停，等待我確認後再進入下一步。<br><br><strong>【Step 1: 原文檢查】</strong><br>請掃描原文，找出可能導致翻譯錯誤的潛在問題（歧義、文化負載詞、邏輯斷裂）。列出問題清單，但暫時不要翻譯。<br><br><strong>【Step 2: 術語提取與確認】</strong><br>提取所有專有名詞、機構名稱、縮寫，整理成術語表，列出建議譯名供我確認。<br><br><strong>【Step 3: 執行翻譯】</strong><br>根據確認後的術語表進行翻譯。若遇到不確定的地方，請用【?】標註並繼續。<br><br><strong>【Step 4: 事實查核】</strong><br>比對原文與譯文，檢查數字、日期、專有名詞是否準確無誤。<br><br><strong>【Step 5: 去歐化潤色】</strong><br>應用英漢對比語言學原則，刪除冗餘連接詞，調整主語，強化動態感。<br><br><strong>【Step 6: 最終定稿】</strong><br>輸出最終版本，並附上『修改摘要』，說明主要調整之處。<br><br>請確認你理解此工作流程，並回答『準備就緒，請提供原文』。`,
+                    realInput: `我們將執行一個系統性的翻譯工作流程。請嚴格按照以下步驟執行，每完成一步後暫停，等待我確認後再進入下一步。<br><br><strong>【Step 1: 原文檢查】</strong><br>請掃描原文，找出可能導致翻譯錯誤的潛在問題（歧義、文化負載詞、邏輯斷裂）。列出問題清單，但暫時不要翻譯。<br><br><strong>【Step 2: 術語提取與確認】</strong><br>提取所有專有名詞、機構名稱、縮寫，整理成術語表，列出建議譯名供我確認。<br><br><strong>【Step 3: 執行翻譯】</strong><br>根據確認後的術語表進行翻譯。若遇到不確定的地方，請用【?】標註並繼續。<br><br><strong>【Step 4: 事實查核】</strong><br>比對原文與譯文，檢查數字、日期、專有名詞是否準確無誤。<br><br><strong>【Step 5: 去歐化潤色】</strong><br>應用英漢對比語言學原則，刪除冗餘連接詞，調整主語，強化動態感。<br><br><strong>【Step 6: 最終定稿】</strong><br>輸出最終版本，並附上『修改摘要』，說明主要調整之處。<br><br>請確認你理解此工作流程，並回答『準備就緒，請提供原文』。`,
+                    aiOutput: `準備就緒，請提供原文。我將按步驟執行，每步完成後等待您的確認。`,
+                    flowSteps: [
+                        { title: "Step 1: 原文檢查", content: "掃描原文，找出歧義、文化負載詞、邏輯斷裂等潛在問題。" },
+                        { title: "Step 2: 術語提取與確認", content: "提取專有名詞、機構名稱、縮寫，整理術語表供確認。" },
+                        { title: "Step 3: 執行翻譯", content: "根據確認後的術語表進行翻譯，不確定處用【?】標註。" },
+                        { title: "Step 4: 事實查核", content: "比對原文與譯文，檢查數字、日期、專有名詞的準確性。" },
+                        { title: "Step 5: 去歐化潤色", content: "應用英漢對比原則，刪除冗餘連接詞，調整主語，強化動態感。" },
+                        { title: "Step 6: 最終定稿", content: "輸出最終版本並附上修改摘要。" }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    // Navigation rendering
+    function renderNav() {
+        const container = document.getElementById('nav-container');
+        strategies.forEach(strategy => {
+            const groupTitle = document.createElement('div');
+            groupTitle.className = 'nav-group-title';
+            groupTitle.textContent = strategy.title;
+            container.appendChild(groupTitle);
+
+            strategy.items.forEach((item, index) => {
+                const navItem = document.createElement('div');
+                navItem.className = 'nav-item';
+                navItem.textContent = item.title;
+                navItem.dataset.strategyId = strategy.id;
+                navItem.dataset.itemIndex = index;
+                navItem.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                    navItem.classList.add('active');
+                    renderContent(strategy, item);
+                });
+                container.appendChild(navItem);
+            });
+        });
+
+        // Auto-select first item
+        const firstItem = container.querySelector('.nav-item');
+        if (firstItem) {
+            firstItem.click();
+        }
+    }
+
+    // Content rendering
+    function renderContent(strategy, item) {
+        const mainContent = document.getElementById('main-content');
+        mainContent.innerHTML = '';
+
+        // Header
+        const header = document.createElement('div');
+        header.className = 'header-section';
+        header.innerHTML = `
+            <h1>${item.title}</h1>
+            <div class="subtitle">${item.desc}</div>
+        `;
+        mainContent.appendChild(header);
+
+        // Visualization (Process Flow)
+        if (item.structure) {
+            const vizCard = document.createElement('div');
+            vizCard.className = 'card';
+            vizCard.innerHTML = `
+                <div class="card-header">流程視覺化 (Process Flow)</div>
+                <div class="card-body">
+                    <div class="viz-container">
+                        ${item.structure.map((step, idx) => `
+                            <div class="viz-step">${step}</div>
+                            ${idx < item.structure.length - 1 ? '<div class="viz-arrow">→</div>' : ''}
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            mainContent.appendChild(vizCard);
+        }
+
+        // Flow Steps (only for Strategy 7)
+        if (item.flowSteps) {
+            const flowCard = document.createElement('div');
+            flowCard.className = 'card';
+            flowCard.innerHTML = `
+                <div class="card-header">詳細步驟說明 (Detailed Steps)</div>
+                <div class="card-body">
+                    ${item.flowSteps.map((step, idx) => `
+                        <div class="flow-step">
+                            <div class="step-badge"></div>
+                            <div class="step-title">${step.title}</div>
+                            <div>${step.content}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            mainContent.appendChild(flowCard);
+        }
+
+        // Prompt Template
+        const promptCard = document.createElement('div');
+        promptCard.className = 'card';
+        promptCard.innerHTML = `
+            <div class="card-header">
+                提示詞模板 (Prompt Template)
+                <button class="copy-btn" onclick="copyPrompt('promptTemplate')">📋 複製</button>
+            </div>
+            <div class="card-body">
+                <div class="prompt-text" id="promptTemplate">${item.promptTemplate}</div>
+            </div>
+        `;
+        mainContent.appendChild(promptCard);
+
+        // Chat Simulation - Now Collapsible
+        const chatCard = document.createElement('div');
+        chatCard.className = 'card';
+        chatCard.innerHTML = `
+            <div class="collapsible-header" onclick="toggleCollapsible(this)">
+                AI 模擬回覆 (Chat Simulation)
+                <span class="expand-icon">▼</span>
+            </div>
+            <div class="collapsible-content">
+                <div class="card-body">
+                    <div class="chat-ui">
+                        <div class="chat-row user">
+                            <div style="text-align: right; flex: 1;">
+                                <span class="chat-label">User Input</span>
+                                <div class="chat-bubble user">${item.realInput}</div>
+                            </div>
+                        </div>
+                        <div class="chat-row ai">
+                            <div style="flex: 1;">
+                                <span class="chat-label">AI Response</span>
+                                <div class="chat-bubble ai">${item.aiOutput}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        mainContent.appendChild(chatCard);
+    }
+
+    // Copy function
+    window.copyPrompt = function(elementId) {
+        const element = document.getElementById(elementId);
+        const text = element.innerText;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✓ 已複製';
+            setTimeout(() => {
+                btn.textContent = originalText;
+            }, 2000);
+        });
+    };
+
+    // Toggle collapsible
+    window.toggleCollapsible = function(header) {
+        const content = header.nextElementSibling;
+        const icon = header.querySelector('.expand-icon');
+        
+        if (content.classList.contains('expanded')) {
+            content.classList.remove('expanded');
+            icon.classList.remove('expanded');
+        } else {
+            content.classList.add('expanded');
+            icon.classList.add('expanded');
+        }
+    };
+
+    // Initialize
+    renderNav();
+</script>
+
+</body>
+</html>
